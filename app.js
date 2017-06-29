@@ -77,7 +77,7 @@ class ImageOverlay {
 
     const img = this.imgs[1];
 
-    this.setImageGreyscale(img);
+    // this.setImageGreyscale(img);
 
   }
 
@@ -89,6 +89,37 @@ class ImageOverlay {
     if (this.mouseDown) {
       // Here we need to check if a mouse is over the image required to move and
       // if the pixel value is not transparent (i.e. !== 0).
+      const img = this.imgs[1];
+      const imageData = this.ctx.getImageData(img.x, img.y, img.width, img.height);
+      const data = imageData.data;
+
+      // The Uint8ClampedArray contains height × width × 4 bytes of data, with
+      // index values ranging from 0 to (height×width×4)-1.
+      //
+      // For example, to read the blue component's value from the pixel at
+      // column 200, row 50 in the image, you would do the following:
+      // blueComponent = data[((100 * (imageData.width * 4)) + (200 * 4)) + 2];
+      data[((50 * (imageData.width * 4)) + (200 * 4)) + 0]  = 0;
+
+      // Where is the mouse?
+      const rect = this.canvas.getBoundingClientRect();
+      const canvasTop = rect.top;
+      const canvasBottom = rect.bottom;
+      const canvasLeft = rect.left;
+      const canvasRight = rect.right;
+
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+
+      // The relative position of the mouse within the canvas element.
+      const xPos = mouseX - canvasLeft;
+      const yPos = mouseY - canvasTop;
+
+      data[((yPos * (imageData.width * 4)) + (xPos * 4)) + 0] = 0;
+      data[((yPos * (imageData.width * 4)) + (xPos * 4)) + 1] = 0;
+      data[((yPos * (imageData.width * 4)) + (xPos * 4)) + 2] = 5;
+
+      this.ctx.putImageData(imageData, img.x, img.y);
     };
   }
 
