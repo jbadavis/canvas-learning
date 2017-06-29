@@ -50,6 +50,7 @@ class ImageOverlay {
 
   initCanvas() {
     this.canvas = document.getElementById("canvas");
+    this.$canvas = $('#canvas');
 
     this.canvas.width = this.canvasDimentions.width;
     this.canvas.height = this.canvasDimentions.height;
@@ -57,10 +58,7 @@ class ImageOverlay {
     this.ctx = this.canvas.getContext('2d');
   }
 
-  handleDown() {
-    this.mouseDown = true;
-
-    const img = this.imgs[1];
+  setImageGreyscale(img) {
     const imageData = this.ctx.getImageData(img.x, img.y, img.width, img.height);
     const data = imageData.data;
 
@@ -74,41 +72,30 @@ class ImageOverlay {
     this.ctx.putImageData(imageData, img.x, img.y);
   }
 
+  handleDown() {
+    this.mouseDown = true;
+
+    const img = this.imgs[1];
+
+    this.setImageGreyscale(img);
+
+  }
+
   handleUp() {
     this.mouseDown = false;
   }
 
   handleMove(e) {
     if (this.mouseDown) {
-          // const img = this.imgs[1];
-          // const data = this.ctx.getImageData(img.x, img.y, img.width, img.height);
-          // const pixels = data.data;
-          //
-          // console.log('Mouse: ', e.clientX, e.clientY);
-          //
-          // console.log(pixels[0]);
-          //
-          // for (var i = 0; i < data.length; i += 4) {
-          //   var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-          //   data[i] = avg; // red
-          //   data[i + 1] = avg; // green
-          //   data[i + 2] = avg; // blue
-          // }
-          //
-          // this.ctx.putImageData(imageData, 0, 0);
-
-          // for (let x = 0; x < data.width; x++) {
-          //   for (let y = 0; y < data.height; y++) {
-          //     // console.log(x, y);
-          //   }
-          // }
+      // Here we need to check if a mouse is over the image required to move and
+      // if the pixel value is not transparent (i.e. !== 0).
     };
   }
 
   events() {
-    $('#canvas').on('mousedown', (e) => this.handleDown(e));
-    $('#canvas').on('mouseup', (e) => this.handleUp(e));
-    $('#canvas').on('mousemove', (e) => this.handleMove(e));
+    this.$canvas.on('mousedown', (e) => this.handleDown(e))
+      .on('mouseup', (e) => this.handleUp(e))
+      .on('mousemove', (e) => this.handleMove(e));
   };
 
   init() {
