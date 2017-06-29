@@ -5,16 +5,35 @@
     <meta charset="utf-8">
     <title>Canvas Image Example</title>
     <style media="screen">
+      html {
+        text-align: center;
+      }
+
       canvas {
         display: block;
         background: beige;
-        margin: 0 auto;
+        margin: 100px auto;
+
+        position: absolute;
+        left: 60%;
+      }
+
+      button {
+        margin-top: 20px;
       }
     </style>
   </head>
 
   <body>
-    <canvas id="canvas"></canvas>
+    <h1>Canvas Examples</h1>
+
+    <div class="canvas-container">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <button id="greyscale">Greyscale</button>
+    <button id="reset">Reset</button>
+
     <script src="/app.bundle.js"></script>
   </body>
 </html>

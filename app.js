@@ -23,6 +23,10 @@ class ImageOverlay {
 
     this.mouseDown = false;
 
+    this.canvas = document.getElementById("canvas");
+    this.greyscaleBtn = document.getElementById("greyscale");
+    this.resetBtn = document.getElementById("reset");
+
     this.init();
   }
 
@@ -49,16 +53,14 @@ class ImageOverlay {
   }
 
   initCanvas() {
-    this.canvas = document.getElementById("canvas");
-    this.$canvas = $('#canvas');
-
     this.canvas.width = this.canvasDimentions.width;
     this.canvas.height = this.canvasDimentions.height;
 
     this.ctx = this.canvas.getContext('2d');
   }
 
-  setImageGreyscale(img) {
+  setImageGreyscale() {
+    const img = this.imgs[1];
     const imageData = this.ctx.getImageData(img.x, img.y, img.width, img.height);
     const data = imageData.data;
 
@@ -70,19 +72,6 @@ class ImageOverlay {
     }
 
     this.ctx.putImageData(imageData, img.x, img.y);
-  }
-
-  handleDown() {
-    this.mouseDown = true;
-
-    const img = this.imgs[1];
-
-    // this.setImageGreyscale(img);
-
-  }
-
-  handleUp() {
-    this.mouseDown = false;
   }
 
   handleMove(e) {
@@ -99,7 +88,8 @@ class ImageOverlay {
       // For example, to read the blue component's value from the pixel at
       // column 200, row 50 in the image, you would do the following:
       // blueComponent = data[((100 * (imageData.width * 4)) + (200 * 4)) + 2];
-      data[((50 * (imageData.width * 4)) + (200 * 4)) + 0]  = 0;
+      // §
+      // data[((50 * (imageData.width * 4)) + (200 * 4)) + 0]  = 0;
 
       // Where is the mouse?
       const rect = this.canvas.getBoundingClientRect();
@@ -108,25 +98,50 @@ class ImageOverlay {
       const canvasLeft = rect.left;
       const canvasRight = rect.right;
 
-      const mouseX = e.clientX;
-      const mouseY = e.clientY;
+      const mouseX = e.pageX;
+      const mouseY = e.pageY;
+
+      // console.log(e.pageX, e.clientX, e.screenX);
 
       // The relative position of the mouse within the canvas element.
       const xPos = mouseX - canvasLeft;
       const yPos = mouseY - canvasTop;
 
-      data[((yPos * (imageData.width * 4)) + (xPos * 4)) + 0] = 0;
-      data[((yPos * (imageData.width * 4)) + (xPos * 4)) + 1] = 0;
-      data[((yPos * (imageData.width * 4)) + (xPos * 4)) + 2] = 5;
+      // console.log(xPos, yPos);
+
+      // console.log(imageData.width);
+
+      // console.log(yPos);
+
+      const thickness = 1;
+
+      for (let i = 0; i < thickness; i++) {
+        for (let j = 0; j < thickness; j++) {
+          let x = xPos + i;
+          let y = yPos + j;
+
+          x = xPos;
+          y = yPos;
+
+          console.log(x, y);
+          let pixel = ((y * (imageData.width * 4)) + (x * 4));
+
+          data[pixel] = 200;
+          data[pixel + 1] = 100;
+          data[pixel + 2] = 150;
+        }
+      }
 
       this.ctx.putImageData(imageData, img.x, img.y);
     };
   }
 
   events() {
-    this.$canvas.on('mousedown', (e) => this.handleDown(e))
-      .on('mouseup', (e) => this.handleUp(e))
-      .on('mousemove', (e) => this.handleMove(e));
+    this.canvas.addEventListener('mousedown', () => this.mouseDown = true);
+    this.canvas.addEventListener('mouseup', () => this.mouseDown = false);
+    this.canvas.addEventListener('mousemove', (event) => this.handleMove(event));
+    this.greyscaleBtn.addEventListener('click', () => this.setImageGreyscale());
+    this.resetBtn.addEventListener('click', () => this.loadImages());
   };
 
   init() {
